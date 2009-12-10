@@ -28,8 +28,8 @@ class MayaToolAutoUpdater:
 		""" parses the XML feed """
 		domObj = minidom.parseString(self.updateFeed.read())
 		kulerResult = domObj.getElementsByTagName("versionNumber")
-		#bitref = kulerResult[0]
-		print(kulerResult)
+		bitref = kulerResult[0]
+		print(bitref)
 	
 goGetUpdate = MayaToolAutoUpdater()
 goGetUpdate.setRunningVersion(0.9)
