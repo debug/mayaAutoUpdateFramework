@@ -12,6 +12,7 @@ class MayaToolAutoUpdater:
 		self.currentRunningVersion = runningVersion
 	
 	def setXMLPath(self, xmlPath):
+		""" set the path to the update information xml file """
 		self.feedPath = xmlPath
 	
 	def getUpdateInformation(self):
