@@ -1,11 +1,14 @@
 from urllib import urlopen
 from xml.dom import minidom
 
+
 class MayaUpdateGUI:
 	pass
 
 class MayaToolAutoUpdater:
 	""" checks online for updated version from XML file """
+	#todos:
+	# add user called update method
 	
 	# current running version of tool
 	currentRunningVersion = ""
@@ -56,10 +59,12 @@ class MayaToolAutoUpdater:
 		bitref = versionNumberResult[0]
 		self.newFileURL = bitref.childNodes[0].nodeValue
 		
-		if (str(self.currentRunningVersion) != str(self.latestVersionNumber)):
-			#print(str(self.latestVersionNumber).strip())
+		if (str(self.currentRunningVersion.strip()) != str(self.latestVersionNumber.strip())):
+			print(str(self.latestVersionNumber).strip())
+			#print(self.latestVersionNumber)
 			#in this event start maya gui showing information and offering to download
-			
+			pass
+		
 goGetUpdate = MayaToolAutoUpdater("0.9a", "http://update.reality-debug.co.uk/audioAmpExtractor.xml")
 
 goGetUpdate.getUpdateInformation()
