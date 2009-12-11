@@ -3,16 +3,17 @@
      <!--this file contains all the data about various sceneshots you've taken-->
      <currentVersion>
       <versionNumber>
-       eyreAffair.ma
+       0.9a
       </versionNumber>
       <bugFixes>
-       5613165431
+       loads of things
       </bugFixes>
       <newFeatures>
-       1400pm
+       added shelf button
+       added automatic update system 
       </newFeatures>
       <fileURL>
-       i like the blue ones
+       http://www.reality-debug.co.uk/downloads/
       </fileURL>
      </currentVersion>
     </CurrentVersionInformation>
