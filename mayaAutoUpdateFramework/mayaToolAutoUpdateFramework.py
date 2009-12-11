@@ -7,6 +7,10 @@ class MayaToolAutoUpdater:
 	# current running version of tool
 	currentRunningVersion = 0.0
 	feedPath = ""
+	latestVersionNumber = ""
+	bugFixList = ""
+	newFeaturesList = ""
+	newFileURL = ""
 	
 	def setRunningVersion(self, runningVersion):
 		self.currentRunningVersion = runningVersion
@@ -28,9 +32,23 @@ class MayaToolAutoUpdater:
 	def parseFeed(self):
 		""" parses the XML feed """
 		domObj = minidom.parseString(self.updateFeed.read())
-		kulerResult = domObj.getElementsByTagName("versionNumber")
-		bitref = kulerResult[0]
-		print(bitref)
+		versionNumberResult = domObj.getElementsByTagName("versionNumber")
+		bitref = versionNumberResult[0]
+		self.latestVersionNumber = bitref.childNodes[0].nodeValue
+		
+		versionNumberResult = domObj.getElementsByTagName("bugFixes")
+		bitref = versionNumberResult[0]
+		self.bugFixList = bitref.childNodes[0].nodeValue
+		
+		versionNumberResult = domObj.getElementsByTagName("newFeatures")
+		bitref = versionNumberResult[0]
+		self.newFeaturesList = bitref.childNodes[0].nodeValue
+		
+		versionNumberResult = domObj.getElementsByTagName("fileURL")
+		bitref = versionNumberResult[0]
+		self.newFileURL = bitref.childNodes[0].nodeValue
+		
+		return self.latestVersionNumber
 	
 goGetUpdate = MayaToolAutoUpdater()
 goGetUpdate.setRunningVersion(0.9)
