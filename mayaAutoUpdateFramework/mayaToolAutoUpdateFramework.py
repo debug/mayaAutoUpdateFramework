@@ -1,9 +1,24 @@
 from urllib import urlopen
 from xml.dom import minidom
-
+import maya.cmds as cmds
 
 class MayaUpdateGUI:
-	pass
+	
+	#class variables
+	
+	def __init__(self, latestVersionNumber, productName, bugFixes, newFeatures, downloadURL):
+		
+		self.updateInformationString = ("Version: " + latestVersionNumber + "Bug fixes-" + bugFixes + "New features-" + newFeatures)
+		updateInformationWindow = cmds.window(title="There is an update available", iconName='Update information', widthHeight=(200, 55))
+		cmds.columnLayout(adjustableColumn=True)
+
+		informationPanel = cmds.scrollField(text=self.updateInformationString, height= 400, width=300, editable=False, wordWrap=True)
+		
+		cmds.button(label='Update')
+		cmds.button(label='Do not ask again')
+		cmds.button(label='Close', command=('cmds.deleteUI(\"' + updateInformationWindow + '\", window=True)'))
+		cmds.setParent('..')
+		cmds.showWindow(updateInformationWindow)
 
 class MayaToolAutoUpdater:
 	""" checks online for updated version from XML file """
@@ -17,9 +32,11 @@ class MayaToolAutoUpdater:
 	bugFixList = ""
 	newFeaturesList = ""
 	newFileURL = ""
+	productName = ""
 	
-	def __init__(self, currentVersion, xmlPath):
+	def __init__(self, productName, currentVersion, xmlPath):
 		self.setRunningVersion(currentVersion)
+		self.setProductName(productName)
 		self.setXMLPath(xmlPath)
 	
 	def setRunningVersion(self, runningVersion):
@@ -29,6 +46,9 @@ class MayaToolAutoUpdater:
 	def setXMLPath(self, xmlPath):
 		""" set the path to the update information xml file """
 		self.feedPath = xmlPath
+		
+	def setProductName(self, productNameIn):
+		self.productName = productNameIn
 	
 	def getUpdateInformation(self):
 
@@ -61,11 +81,10 @@ class MayaToolAutoUpdater:
 		
 		if (str(self.currentRunningVersion.strip()) != str(self.latestVersionNumber.strip())):
 			print(str(self.latestVersionNumber).strip())
-			#print(self.latestVersionNumber)
+			mayaGUI = MayaUpdateGUI(self.latestVersionNumber, self.productName, self.bugFixList, self.newFeaturesList, self.newFileURL)
 			#in this event start maya gui showing information and offering to download
-			pass
 		
-goGetUpdate = MayaToolAutoUpdater("0.9a", "http://update.reality-debug.co.uk/audioAmpExtractor.xml")
+goGetUpdate = MayaToolAutoUpdater("AudioAmpExtractor", "0.8a", "http://update.reality-debug.co.uk/audioAmpExtractor.xml")
 
 goGetUpdate.getUpdateInformation()
 goGetUpdate.parseFeed()
