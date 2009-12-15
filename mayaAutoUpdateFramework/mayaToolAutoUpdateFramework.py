@@ -1,4 +1,6 @@
-from urllib import urlopen
+import os
+import sys
+import urllib
 from xml.dom import minidom
 import maya.cmds as cmds
 
@@ -8,17 +10,50 @@ class MayaUpdateGUI:
 	
 	def __init__(self, latestVersionNumber, productName, bugFixes, newFeatures, downloadURL):
 		
+		fileDownloader = updateDownloadSystem()
+		
+		base = downloadURL[downloadURL.rindex('/')+1:]
+		
+		
+		
 		self.updateInformationString = ("Version: " + latestVersionNumber + "Bug fixes-" + bugFixes + "New features-" + newFeatures)
 		updateInformationWindow = cmds.window(title="There is an update available", iconName='Update information', widthHeight=(200, 55))
 		cmds.columnLayout(adjustableColumn=True)
 
 		informationPanel = cmds.scrollField(text=self.updateInformationString, height= 400, width=300, editable=False, wordWrap=True)
 		
-		cmds.button(label='Update')
+		cmds.button(label='Update', command=self.callDownloadCommand(downloadURL, base))
 		cmds.button(label='Do not ask again')
 		cmds.button(label='Close', command=('cmds.deleteUI(\"' + updateInformationWindow + '\", window=True)'))
 		cmds.setParent('..')
 		cmds.showWindow(updateInformationWindow)
+		
+	def callDownloadCommand(self, downloadURL, base):
+		fileDownloader = updateDownloadSystem()
+		fileDownloader.geturl(downloadURL, base)
+		print(65)
+		
+class updateDownloadSystem():
+
+	def _reporthook(self, numblocks, blocksize, filesize, url=None):
+
+		base = os.path.basename(url)
+		#XXX Should handle possible filesize=-1.
+
+		try:
+			percent = min((numblocks*blocksize*100)/filesize, 100)
+		except:
+			percent = 100
+		if numblocks != 0:
+			sys.stdout.write("\b"*70)
+		sys.stdout.write("%-66s%3d%%" % (base, percent))
+
+	def geturl(self, url, dst):
+		print "get url '%s' to '%s'" % (url, dst)
+		urllib.urlretrieve(url, dst,
+							lambda nb, bs, fs, url=url: self._reporthook(nb,bs,fs,url))
+		sys.stdout.write('\n')
+
 
 class MayaToolAutoUpdater:
 	""" checks online for updated version from XML file """
