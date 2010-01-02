@@ -14,8 +14,6 @@ class MayaUpdateGUI:
 		
 		base = downloadURL[downloadURL.rindex('/')+1:]
 		
-		
-		
 		self.updateInformationString = ("Version: " + latestVersionNumber + "Bug fixes-" + bugFixes + "New features-" + newFeatures)
 		updateInformationWindow = cmds.window(title="There is an update available", iconName='Update information', widthHeight=(200, 55))
 		cmds.columnLayout(adjustableColumn=True)
@@ -31,7 +29,6 @@ class MayaUpdateGUI:
 	def callDownloadCommand(self, downloadURL, base):
 		fileDownloader = updateDownloadSystem()
 		fileDownloader.geturl(downloadURL, base)
-		print(65)
 		
 class updateDownloadSystem():
 
@@ -117,8 +114,7 @@ class MayaToolAutoUpdater:
 		if (str(self.currentRunningVersion.strip()) != str(self.latestVersionNumber.strip())):
 			print(str(self.latestVersionNumber).strip())
 			mayaGUI = MayaUpdateGUI(self.latestVersionNumber, self.productName, self.bugFixList, self.newFeaturesList, self.newFileURL)
-			#in this event start maya gui showing information and offering to download
-		
+			
 goGetUpdate = MayaToolAutoUpdater("AudioAmpExtractor", "0.8a", "http://update.reality-debug.co.uk/audioAmpExtractor.xml")
 
 goGetUpdate.getUpdateInformation()
