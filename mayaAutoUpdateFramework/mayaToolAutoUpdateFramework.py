@@ -29,8 +29,15 @@ class MayaUpdateGUI:
 		
 	def callDownloadCommand(self, *args):
 		#fileDownloader = updateDownloadSystem()
-		self.fileDownloader.geturl(self.downloadURL, ("/moo/" + self.base))
-
+		self.fileSaveDialog()
+		
+		#self.fileDownloader.geturl(self.downloadURL, ("/moo/" + self.base))
+		
+	def fileSaveDialog(self, *args):
+		#print(type(str(self.base)))
+		self.downloadPath = cmds.fileDialog(mode=1, directoryMask=str(self.base))
+		
+		#cmds.fileBrowserDialog(m=1, fc=self.callDownloadCommand, actionName='Save File', operationMode='SaveAs', includeName=self.base, filterList=self.base, tipMessage=self.base)
 		
 class updateDownloadSystem():
 
@@ -45,24 +52,24 @@ class updateDownloadSystem():
 		
 		try:
 			percent = min((numblocks*blocksize*100)/filesize, 100)
-			cmds.progressWindow(title='Download', progress=percent, status='Downloading: ', isInterruptable=True)
+			cmds.progressWindow(title='Download', progress=percent*10, status='Downloading: ', isInterruptable=True)
 		except:
 			percent = 100
-			#cmds.progressWindow(endProgress=1)
+			cmds.progressWindow(endProgress=1)
 
 		if numblocks != 0:
-			sys.stdout.write("\b"*70)
-			cmds.progressWindow( edit=True, progress=percent, status=('Downloading: ' + str(percent) + '%' ) )
+			#sys.stdout.write("\b"*70)
+			cmds.progressWindow(edit=True, progress=percent, status=('Downloading: ' + str(percent) + '%' ))
 		
 		
 		
-		sys.stdout.write("%-66s%3d%%" % (base, percent))
+		#sys.stdout.write("%-66s%3d%%" % (base, percent))
 
 	def geturl(self, url, dst):
 		#print "get url '%s' to '%s'" % (url, dst)
 		urllib.urlretrieve(url, dst,
 							lambda nb, bs, fs, url=url: self._reporthook(nb,bs,fs,url))
-		sys.stdout.write('\n')
+		#sys.stdout.write('\n')
 
 
 class MayaToolAutoUpdater:
