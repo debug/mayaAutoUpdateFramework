@@ -10,7 +10,6 @@ class MayaUpdateGUI:
 	
 	#class variables
 	
-	
 	def __init__(self, latestVersionNumber, productName, bugFixes, newFeatures, downloadURL):
 		
 		self.preferenceFileName = "mayaUpdatePrefs.prefs"
@@ -65,27 +64,43 @@ class MayaUpdateGUI:
 		
 class updateDownloadSystem():
 
-	def _reporthook(self, numblocks, blocksize, filesize, url=None):
-
+	def reporthook(self, numblocks, blocksize, filesize, url=None):
+		
+		
+		
 		fileName = os.path.basename(url)
+		
+		percent = min((numblocks*blocksize*100)/filesize, 100)
+		
+		cmds.progressWindow(title='Downloading', progress=percent, status='Downloading: ', isInterruptable=True)
+		
+		if(percent == 100):
+			cmds.progressWindow(endProgress=True)
+		else:
+			cmds.progressWindow(edit=True, title='Downloaded', progress=percent, status=('Downloading: ' + str(percent) + '%' ))
 
-		try:
+			
+		'''try:
 			percent = min((numblocks*blocksize*100)/filesize, 100)
-			cmds.progressWindow(title='Download', progress=percent, status='Downloading: ', isInterruptable=True)
+			cmds.progressWindow(title='Downloading', progress=percent, status='Downloading: ', isInterruptable=True)
+			#cmds.progressWindow(endProgress=True)
+
 		except:
 			percent = 100
-			cmds.progressWindow(endProgress=1)
+			cmds.progressWindow(isCancelled=True)
 
 		if numblocks != 0:
-			cmds.progressWindow(edit=True, progress=percent, status=('Downloading: ' + str(percent) + '%' ))
-		
+			#cmds.progressWindow(edit=True, title='Downloaded', progress=percent, status=('Downloading: ' + str(percent) + '%' ))
+			cmds.progressWindow(endProgress=True)
+		'''
 		
 	def geturl(self, url, dst):
 		
 		urllib.urlretrieve(url, dst,
-							lambda nb, bs, fs, url=url: self._reporthook(nb,bs,fs,url))
+							lambda nb, bs, fs, url=url: self.reporthook(nb,bs,fs,url))
 
 class MayaToolAutoUpdater:
+	
 	""" checks online for updated version from XML file """
 
 	currentRunningVersion = ""
@@ -164,7 +179,7 @@ class MayaToolAutoUpdater:
 			
 		except IOError:
 
-			print "IO Error: Cannot to connect to 'tinternet."
+			sys.stderr.write("IO Error: Cannot to connect to 'tinternet.")
 
 	def currentLocation(self):
 		currentDir = os.path.dirname(locationMarker.__file__)
@@ -195,7 +210,6 @@ class MayaToolAutoUpdater:
 			
 
 
-
-#goGetUpdate = MayaToolAutoUpdater("AudioAmpExtractor", "0.8a", "http://update.reality-debug.co.uk/audioAmpExtractor.xml")
-
-#goGetUpdate.userQueriesUpdate()
+if __name__ == '__main__':
+	goGetUpdate = MayaToolAutoUpdater("AudioAmpExtractor", "0.8a", "http://update.reality-debug.co.uk/audioAmpExtractor.xml")
+	#goGetUpdate.userQueriesUpdate()
