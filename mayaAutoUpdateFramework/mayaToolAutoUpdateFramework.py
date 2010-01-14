@@ -2,7 +2,13 @@ import os
 import sys
 import urllib
 from xml.dom import minidom
+
+import tkFileDialog
+
 import maya.cmds as cmds
+import maya.mel as mel
+
+
 
 import locationMarker
 
@@ -10,7 +16,7 @@ class MayaUpdateGUI:
 	
 	#class variables
 	
-	def __init__(self, latestVersionNumber, productName, bugFixes, newFeatures, downloadURL):
+	def __init__(self, latestVersionNumber, currentRunningVersion, productName, bugFixes, newFeatures, downloadURL):
 		
 		self.preferenceFileName = "mayaUpdatePrefs.prefs"
 		
@@ -20,19 +26,20 @@ class MayaUpdateGUI:
 		self.downloadURL = downloadURL
 		
 		self.updateInformationString = (productName + "version " + latestVersionNumber + "is now available." + "Bug fixes-" + bugFixes + "New features-" + newFeatures)
-		updateInformationWindow = cmds.window(title="Software Update", iconName='Update', widthHeight=(200, 55))
+		self.updateInformationWindow = cmds.window(title="Software Update", iconName='Update', widthHeight=(200, 55))
 		cmds.columnLayout(adjustableColumn=True)
 
 		informationPanel = cmds.scrollField(text=self.updateInformationString, height= 400, width=300, editable=False, wordWrap=True)
 		
-		
+		cmds.text( label=(productName + latestVersionNumber + " is now available, you're currently running version " + currentRunningVersion + " would you like to download it now?"), align='left' )
+
 		cmds.checkBox(label='Do not ask again.', onCommand=self.turnOnAutoUpdate, offCommand=self.turnOffAutoUpdate)
 		
 		cmds.button(label='Update', command=self.callDownloadCommand)
 
-		cmds.button(label='Close', command=('cmds.deleteUI(\"' + updateInformationWindow + '\", window=True)'))
+		cmds.button(label='Cancel', command=('cmds.deleteUI(\"' + self.updateInformationWindow + '\", window=True)'))
 		cmds.setParent('..')
-		cmds.showWindow(updateInformationWindow)
+		cmds.showWindow(self.updateInformationWindow)
 		
 	def callDownloadCommand(self, *args):
 		
@@ -40,9 +47,16 @@ class MayaUpdateGUI:
 		
 		self.fileDownloader.geturl(self.downloadURL, self.downloadPath)
 		
+		cmds.deleteUI(self.updateInformationWindow, window=True)
+		
 	def fileSaveDialog(self, *args):
-
-		self.downloadPath = cmds.fileDialog(mode=1, directoryMask=str(self.base))
+		
+		#!!! look into this
+		
+		saveFileName = self.base.strip()
+		
+		#self.downloadPath = tkFileDialog.asksaveasfile(mode='w', initialfile=str(saveFileName))
+		self.downloadPath = cmds.fileDialog(mode=1, defaultFileName=str(saveFileName))
 	
 	def turnOffAutoUpdate(self, *args):
 		defaultPrefContents = "autoUpdateCheck = FALSE"
@@ -76,6 +90,7 @@ class updateDownloadSystem():
 		
 		if(percent == 100):
 			cmds.progressWindow(endProgress=True)
+			
 		else:
 			cmds.progressWindow(edit=True, title='Downloaded', progress=percent, status=('Downloading: ' + str(percent) + '%' ))
 
@@ -206,7 +221,7 @@ class MayaToolAutoUpdater:
 		self.newFileURL = bitref.childNodes[0].nodeValue
 		
 		if (str(self.currentRunningVersion.strip()) != str(self.latestVersionNumber.strip())):
-			self.mayaGUI = MayaUpdateGUI(self.latestVersionNumber, self.productName, self.bugFixList, self.newFeaturesList, self.newFileURL)
+			self.mayaGUI = MayaUpdateGUI(str(self.latestVersionNumber.strip()), str(self.currentRunningVersion.strip()), str(self.productName.strip()), str(self.bugFixList.strip()), str(self.newFeaturesList.strip()), self.newFileURL)
 			
 
 
